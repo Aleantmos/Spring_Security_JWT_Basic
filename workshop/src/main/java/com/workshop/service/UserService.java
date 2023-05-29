@@ -30,8 +30,11 @@ public class UserService {
         return mapUserToMyUserDetails(userByEmail);
     }
 
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
 
-    private MyUserDetails mapUserToMyUserDetails(User user) {
+    public MyUserDetails mapUserToMyUserDetails(User user) {
         return modelMapper.map(user, MyUserDetails.class);
     }
 }
