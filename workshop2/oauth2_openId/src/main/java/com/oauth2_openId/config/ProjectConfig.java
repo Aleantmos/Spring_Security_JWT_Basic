@@ -50,8 +50,4 @@ public class ProjectConfig {
         return AuthorizationServerSettings.builder().build();
     }
 
-    @Bean
-    public RegisteredClientRepository registeredClientRepository() {
-        return null;
-    }
 }

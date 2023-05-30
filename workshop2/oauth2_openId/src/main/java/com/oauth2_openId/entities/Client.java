@@ -22,9 +22,16 @@ public class Client {
 
     private String secret;
 
-    private String authentication;
-
     @OneToMany(mappedBy = "client")
     private List<GrantType> grantTypes;
+
+    @OneToMany(mappedBy = "client")
+    private List<RedirectUrl> redirectUrls;
+
+    @OneToMany(mappedBy = "client")
+    private List<Scope> scopes;
+
+    @OneToMany(mappedBy = "client")
+    private List<AuthenticationMethod> authenticationMethods;
 
 }
