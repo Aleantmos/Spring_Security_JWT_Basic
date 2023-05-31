@@ -34,4 +34,6 @@ public class Client {
     @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
     private List<AuthenticationMethod> authenticationMethods;
 
+    @OneToOne(mappedBy = "client")
+    private ClientTokenSettings clientTokenSettings;
 }

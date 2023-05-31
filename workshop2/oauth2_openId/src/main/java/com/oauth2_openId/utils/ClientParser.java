@@ -4,13 +4,47 @@ import com.oauth2_openId.entities.*;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ClientParser {
+    public static Client setClient(RegisteredClient registeredClient) {
+        Client client = new Client();
+        client.setClientId(registeredClient.getClientId());
+        client.setSecret(registeredClient.getClientSecret());
+        client.setAuthenticationMethods(
+                registeredClient.getClientAuthenticationMethods()
+                        .stream()
+                        .map(authenticationMethod -> parseAuthMethod(authenticationMethod, client))
+                        .collect(Collectors.toList())
+        );
+        client.setGrantTypes(
+                registeredClient.getAuthorizationGrantTypes()
+                        .stream()
+                        .map(grantType -> parseGrantType(grantType, client))
+                        .collect(Collectors.toList())
+        );
+        client.setRedirectUrls(
+                registeredClient.getRedirectUris()
+                        .stream()
+                        .map(url -> parseRedirectUrl(url, client))
+                        .collect(Collectors.toList())
+        );
+        client.setScopes(
+                registeredClient.getScopes()
+                        .stream()
+                        .map(scope -> parseScope(scope, client))
+                        .collect(Collectors.toList())
+        );
+        return client;
+    }
+
 
 
     public static RegisteredClient fromClient(Client client) {
@@ -21,6 +55,10 @@ public class ClientParser {
                 .authorizationGrantTypes(authorizationGrantTypes(client.getGrantTypes()))
                 .scopes(scopes(client.getScopes()))
                 .redirectUris(redirectUris(client.getRedirectUrls()))
+                .tokenSettings(TokenSettings.builder()
+                        .accessTokenTimeToLive(Duration.ofHours(client.getClientTokenSettings().getAccessTokenTTL()))
+                        .accessTokenFormat(new OAuth2TokenFormat(client.getClientTokenSettings().getType()))
+                        .build())
                 .build();
     }
 
@@ -59,37 +97,6 @@ public class ClientParser {
         };
     }
 
-
-    public static Client setClient(RegisteredClient registeredClient) {
-        Client client = new Client();
-        client.setClientId(registeredClient.getClientId());
-        client.setSecret(registeredClient.getClientSecret());
-        client.setAuthenticationMethods(
-                registeredClient.getClientAuthenticationMethods()
-                        .stream()
-                        .map(authenticationMethod -> parseAuthMethod(authenticationMethod, client))
-                        .collect(Collectors.toList())
-        );
-        client.setGrantTypes(
-                registeredClient.getAuthorizationGrantTypes()
-                        .stream()
-                        .map(grantType -> parseGrantType(grantType, client))
-                        .collect(Collectors.toList())
-        );
-        client.setRedirectUrls(
-                registeredClient.getRedirectUris()
-                        .stream()
-                        .map(url -> parseRedirectUrl(url, client))
-                        .collect(Collectors.toList())
-        );
-        client.setScopes(
-                registeredClient.getScopes()
-                        .stream()
-                        .map(scope -> parseScope(scope, client))
-                        .collect(Collectors.toList())
-        );
-        return client;
-    }
 
     private static Scope parseScope(String scope, Client client) {
         Scope s = new Scope();
