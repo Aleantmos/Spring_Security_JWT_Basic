@@ -53,16 +53,4 @@ public class ProjectConfig {
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder().build();
     }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails u1 = User.withUsername("bill")
-                .password("123")
-                .authorities("read")
-                .build();
-
-        return new InMemoryUserDetailsManager(u1);
-    }
-
-
 }
